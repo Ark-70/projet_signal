@@ -1,0 +1,23 @@
+function [trames] = SignalToTrames(signal,glissiere_len,mode)
+
+trames=[];
+
+%% Mode 0 si pas de recouvrememnt
+if(mode==0)
+    for i = 1:glissiere_len:(length(signal)-glissiere_len+1)
+        trames = [trames ; signal(i:i+glissiere_len-1)];
+    end
+end
+
+%% Mode 1 si 50% de recouvrememnt
+if(mode==1)
+    for i = 1:round(glissiere_len/2):(length(signal)-glissiere_len+1)
+        trames = [trames ; signal(i:i+glissiere_len-1)];
+    end
+end
+
+LastTrame=signal(i+glissiere_len:end);
+[i,l]=size(LastTrame);
+trames = [trames ; [LastTrame zeros(glissiere_len-l)];
+
+

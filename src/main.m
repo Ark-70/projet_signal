@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%% PROJET SIGNAL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% PROJET SIGNAL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 close all; clear;
@@ -14,8 +14,6 @@ signal = fcno03fz';
 
 %Genreation d'un bruit blanc
 bruit = (randn(1,length(signal))*var_n)+moyenne;
-
-sig_bruit=bruit+signal;
 
 %% PRELIMINAIRE 1
 
@@ -88,5 +86,27 @@ figure; plot(SpctPuiss);
 
 %% PRELIMINAIRE 2
 
-figure, subplot(2,1,1); plot(sig_bruit);
-spectrogram(sig_bruit,'yaxis');
+rsb = 5; %Rapport signal sur bruit. 
+
+sig_bruit=bruitage(signal,rsb);
+
+figure(1)
+subplot(1,2,1); spectrogram(sig_bruit,'yaxis');
+subplot(1,2,2); plot(sig_bruit);
+
+figure(2)
+subplot(1,2,1); spectrogram(signal,'yaxis');
+subplot(1,2,2); plot(signal);
+
+%COMMENTAIRE : La puissance des petites fréquence augmente. Le résultas est
+%plus visible lorsqu'on augmente la variance du bruit. 
+
+%% PREEMBULE 2.4
+
+%Coupe un signal en trames de len 50
+trames = SignalToTrames(signal,50,0);
+
+rec_signal = TramesToSignal(signal,0); %J'ai pas fini le mode 1 (50% de recouvrement)
+
+err = sum(rec_signal - signal);
+
