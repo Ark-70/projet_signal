@@ -11,11 +11,9 @@ load('fcno03fz.mat');
 var_n = 1;
 moyenne = 0;
 signal = fcno03fz';
-winlen = 100; 
 
 %Dimention de la matrice de Hankel
-M = winlen;
-
+M =
 
 %Genreation d'un bruit blanc
 bruit = (randn(1,length(signal))*var_n)+moyenne;
@@ -24,5 +22,4 @@ bruit = (randn(1,length(signal))*var_n)+moyenne;
 
 %Creation de la matrice de Hankel
 
-Hs = Hankel(signal,M);
-
+Hs = Hankel(sgnal,M)
