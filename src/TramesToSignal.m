@@ -2,7 +2,7 @@ function [trames] = TramesToSignal(trames,mode)
 
     signal=[];
     [nb_trames , glissiere_len] = size(trames);
-    %% Mode 0 si 50% de recouvrememnt
+    %% Mode 0 sans recouvrememnt
     if(mode==0)
         for ii = 1:nb_trames
             signal = [signal  trames(ii,:)];
@@ -10,7 +10,7 @@ function [trames] = TramesToSignal(trames,mode)
     end
     
 
-    %% Mode 1 si pas de recouvrement
+    %% Mode 1 si 50% de recouvrement
     if(mode==1)
         signal = [signal trames(1,round(glissiere_len)/2)];
         for ii = 1:nb_trames

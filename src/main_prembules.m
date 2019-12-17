@@ -12,7 +12,7 @@ var_n = 1;
 moyenne = 0;
 signal = fcno03fz';
 
-%Genreation d'un bruit blanc
+%Generation d'un bruit blanc
 bruit = (randn(1,length(signal))*var_n)+moyenne;
 
 %% PRELIMINAIRE 1
