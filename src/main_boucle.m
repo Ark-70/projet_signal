@@ -4,23 +4,22 @@
 
 clear all ;clc;close all;
 
-addpath('../data');
-load('fcno03fz.mat');
+addpath('tools','../data');
+%load('fcno03fz.mat');
+%Fs= 8000;
+[sig,Fs] = audioread('CAMSON2.wav');
 
 %% VARIABLES
 
 moyenne = 0;
-signal = fcno03fz';
+signal = sig';
 winlen = 512;
 
-%Genreation d'un signal test avec bruit blanc pour faire des tests avec un
-%signal non bruite
+%Ajout de bruit blanc
 %{
-signaltest = audioread("test.wav",[1,length(signal)])';
-signaltest = signaltest(2,:);
-
-bruit = (randn(1,length(signaltest))*var_n)+moyenne;
-signal = signaltest + bruit;
+rsb = 5; %Rapport signal sur bruit. 
+sig_bruit5=bruitage(signal,rsb);
+audiowrite('sigbruit.wav',signal, Fs)
 %}
 
 %On estime la variance du bruit :
@@ -87,6 +86,6 @@ end
 
 rcv_signal =  TramesToSignal(rcv_trames,0);
 save("../savedData/methode2/winlen1024/data/SigForkequal_"+int2str(K)+".mat","rcv_signal","K","winlen");
-%audiowrite("../savedData/methode1/winlen1024/wav/SigForkequal_"+int2str(K)+".wav",rcv_signal, 8000)
+%audiowrite("../savedData/methode1/winlen1024/wav/SigForkequal_"+int2str(K)+".wav",rcv_signal, Fs)
 
 end

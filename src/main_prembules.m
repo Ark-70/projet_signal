@@ -4,13 +4,13 @@
 
 close all; clear;
 
-addpath('../data');
-load('fcno03fz.mat');
+addpath('tools','../data');
+load('fcno04fz.mat');
 
 %% VARIABLES
 var_n = 1;
 moyenne = 0;
-signal = fcno03fz';
+signal = fcno04fz';
 
 %Generation d'un bruit blanc
 bruit = (randn(1,length(signal))*var_n)+moyenne;
@@ -24,6 +24,18 @@ CorrBruit_th(floor(length(signal)/2)) = 1;
 [CorrBruit_biased, lags_biased] = xcorr(bruit,'biased');
 
 [CorrBruit_unb, lags_unb] = xcorr(bruit,'unbiased');
+
+
+%Affichage des Autocorrelation.
+%{
+subplot(2,2,1); plot(linspace(-1,1,length(signal)), CorrBruit_th);
+ylim([-0.5 1.1]), xlabel('temps (en s)'), ylabel('U²'), title("Corrélation théorique ");
+subplot(2,2,2); plot(lags_biased, CorrBruit_biased);
+ylim([-0.5 1.1]),xlabel('temps (en s)'), ylabel('U²'), title("Méthode biaisé ");
+subplot(2,2,3); plot(lags_unb, CorrBruit_unb);
+ylim([-0.5 1.1]),xlabel('temps (en s)'), ylabel('U²'), title("Méthode non biaisé");
+sgtitle("Corrélation d'un bruit blanc");
+%}
 
 %Periodogramme Daniell
 DSP_daniell = pnegru(bruit);
@@ -39,64 +51,50 @@ DSP_welch = (pwelch(bruit,window))';
 
 %Periodogramme bartlett
 DSP_bartlett = pbartlett(bruit);
-figure ,plot(linspace(-1,1,length(DSP_bartlett)),DSP_bartlett);
+%figure ,plot(linspace(-1,1,length(DSP_bartlett)),DSP_bartlett);
+
+
+%Affichage des Autocorrelation.
+%{
+subplot(2,2,1); plot(linspace(-1,1,length(DSP_bartlett)),DSP_bartlett);
+xlabel('temps (en s)'), ylabel('U²'), title("Périodogramme de Bartlett");
+subplot(2,2,2); plot(linspace(-1,1,length(DSP_welch)*2),[fliplr(DSP_welch), DSP_welch]);
+xlabel('temps (en s)'), ylabel('U²'), title("Périodogramme de Welch");
+subplot(2,2,3); plot(linspace(-1,1,length(DSP_daniell)),DSP_daniell);
+xlabel('temps (en s)'), ylabel('U²'), title("Périodogramme de Daniell,");
+sgtitle("Densité spectrales de puissance d'un bruit blanc");
+%}
+
 
 %Correlogram
 
+% Nothin' :( 
 
-
-
-%% Affichage
-
-%Affichage des Autocorrelation.
-
-%{
-subplot(3,1,1); plot(linspace(-1,1,length(signal)), CorrBruit_th);
-subplot(3,1,2); plot(lags_biased, CorrBruit_biased);
-subplot(3,1,3); plot(lags_unb, CorrBruit_unb);
-%}
-
-%Affichage des DensitÃ© spetrales.
-%{
-figure; plot(SpctPuiss);
-%}
-
-%%DSP
-%{
-    figure (5)
-    subplot(211);
-    semilogy(DSP_Ss);
-    subplot(212);
-    semilogy(linspace(0,Fe*0.1/2,200),ones(1,200));
-    ylabel('ampitude');
-    xlabel('f');
-    title('DSP thÃ©orique de Ss');
-    figure (6)
-    subplot(211);
-    semilogy(linspace(0,Fe*0.1/2,8192),DSP_th_Sl);
-    ylabel('ampitude');
-    xlabel('f en Hz*10');
-    title('DSP thÃ©orique de Sl');
-    subplot(212);
-    semilogy(DSP_Sl);
-    ylabel('ampitude');
-    xlabel('f en Hz*10');
-    title('DSP de Sl');
-%}
 
 %% PRELIMINAIRE 2
 
 rsb = 5; %Rapport signal sur bruit. 
+sig_bruit5=bruitage(signal,rsb);
+rsb = 10; 
+sig_bruit10=bruitage(signal,rsb);
+rsb = 15;  
+sig_bruit15=bruitage(signal,rsb);
 
-sig_bruit=bruitage(signal,rsb);
 
-figure(1)
-subplot(1,2,1); spectrogram(sig_bruit,'yaxis');
-subplot(1,2,2); plot(sig_bruit);
+%Affichage des sig bruit.
 
+%{
 figure(2)
-subplot(1,2,1); spectrogram(signal,'yaxis');
-subplot(1,2,2); plot(signal);
+subplot(4,2,1); spectrogram(signal, 'yaxis'), caxis([0 70]),title("Sigal original"); 
+subplot(4,2,3); plot(signal), xlabel('temps (en s)'), ylabel('Amplitude');
+subplot(4,2,2); spectrogram(sig_bruit15, 'yaxis'), xlabel(''), ylabel(''), caxis([0 70]), title("Sigal bruité (rsb = 15)");
+subplot(4,2,4); plot(sig_bruit15);
+subplot(4,2,5); spectrogram(sig_bruit10, 'yaxis'), xlabel(''), ylabel(''),caxis([0 70]), title("Sigal bruité (rsb = 10)");
+subplot(4,2,7); plot(sig_bruit10);
+subplot(4,2,6); spectrogram(sig_bruit5, 'yaxis'), xlabel(''), ylabel(''), caxis([0 70]), title("Sigal bruité (rsb = 5)");
+subplot(4,2,8); plot(sig_bruit5);
+sgtitle("Spectogrames et représentaions temporelles d'un signal");
+%}
 
 %COMMENTAIRE : La puissance des petites frÃ©quence augmente. Le rÃ©sultas est
 %plus visible lorsqu'on augmente la variance du bruit. 

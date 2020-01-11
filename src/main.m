@@ -4,42 +4,32 @@
 
 clear all ;clc;close all;
 
-addpath('../data');
-load('fcno03fz.mat');
+addpath('tools','../data');
+%load('fcno03fz.mat');  %Fs = 8000, bien pensé décommenté pour l'utiliser !
+[sig,Fs] = audioread('CAMSON2.wav');
 
 %% VARIABLES
-var_n = 1;
-moyenne = 0;
-signal = fcno03fz';
+signal = sig';
+%Fs = 8000; % A decommenter si load fcno
 winlen = 1024;
 
+%Ajout de bruit blanc
+rsb = 5; %Rapport signal sur bruit. 
+sig_bruit5=bruitage(signal,rsb);
 
-%Genreation d'un signal test avec bruit blanc pour faire des tests avec un
-%signal non bruitÃ© ou se genre de baille t'as captÃ© ? 
-
-%{
-signaltest = sin(length(signal));
-bruit = (randn(1,length(signal))*var_n)+moyenne;
-
-signal = signaltest + bruit; 
-%}
-
-%On decoupe pour conserver les donnÃ©es d'interet. 
-signal = signal(1E4:4E4);
-%audiowrite('sig.wav',signal, 8000)
+%On decoupe pour conserver les données d'interet / pour que le scipt complie plus vite
+signal = signal(1E4:4E5);
+audiowrite('sig.wav',signal, Fs)
 
 
 %Dimention de la matrice de Hankel
-
 M = winlen;
-
 tramelen = 1024*10;
 Total = tramelen;
 L = Total - M;  
 
-
 %Nombre de valeur siguliÃ¨re qu'on consrve. 
-K = 200;
+K = 400;
 
 
 %% TRAITEMENT
@@ -92,7 +82,7 @@ hold on
 plot(rcv_signal,'r');
 title("Signals");
 legend('Signal original','Signal debruitÃ©');
-audiowrite('sig_nonrehausse.wav',rcv_signal, 8000)
+audiowrite('sig_nonrehausse.wav',2*rcv_signal, Fs)
 
 
 figure,subplot(2,1,1); spectrogram(signal,'yaxis');
@@ -104,8 +94,16 @@ figure,subplot(2,1,1); spectrogram(rcv_signal,'yaxis');
 subplot(2,1,2); plot(rcv_signal);
 title("Signal debruitÃ©");
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Dans le rapport, il y a érit :                                           %
+%    Il suffit alors de considérer les échantillons de la première        %
+%       colonne et de la dernière ligne pour obtenir la trame rehaussée.  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% Rehaussement du signal (c'est probablement de la merde)
 
+%{
 %Threshold
 rcv_signal_rehaus= rcv_signal.*1E50.*(abs(rcv_signal)>=2500) + rcv_signal.*(abs(rcv_signal)<2500);
 
@@ -119,4 +117,4 @@ audiowrite('truc.wav',rcv_signal_rehaus, 8000)
 figure,subplot(2,1,1); spectrogram(rcv_signal_rehaus,'yaxis');
 subplot(2,1,2); plot(rcv_signal_rehaus);
 title("Signal RehaussemÃ©");
-
+%}

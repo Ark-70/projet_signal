@@ -6,12 +6,13 @@
 %%% Le fichiers contients toutes nos tests tirÃ©. La hirarchi des fichier donnes les
 %%% Cette fonction permet de les tracÃ©s.
 %%% Des fichiers audio vont Ãªtre cree.
-%%% Pour des reson d'economie de stockage, veillez les supprimer aprÃ¨s utilisation
+%%% pensé à les supprimer après utilisation
 
 clear all ;clc;close all;
 
 addpath('../data');
 load('fcno03fz.mat');
+Fs = 8000;
 signal = fcno03fz';
 signal = signal(1E4:4E4);
 
@@ -67,7 +68,7 @@ end
 for winlen = winlens
   for K  = Ks
     load("../savedData/methode"+int2str(method)+"/winlen"+int2str(winlen)+"/data/SigForkequal_"+int2str(K)+".mat");
-    audiowrite("../savedData/methode"+int2str(method)+"/winlen"+int2str(winlen)+"/data/SigForkequal_"+int2str(K)+".wav",rcv_signal, 8000);
+    audiowrite("../savedData/methode"+int2str(method)+"/winlen"+int2str(winlen)+"/data/SigForkequal_"+int2str(K)+".wav",rcv_signal, Fs);
   end
 end
 
